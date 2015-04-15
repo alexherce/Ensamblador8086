@@ -1,0 +1,61 @@
+imprimir macro texto ren col color
+    local ciclo
+        mov si, 0
+        mov dl, col
+        mov dh, ren
+ciclo:
+        mov bl, color
+        mov ah, 02
+        mov bh, 00
+        int 10h
+        mov ah, 09
+        mov al, texto[si]
+        mov cx, 1
+        int 10h
+        inc si 
+        inc bl 
+        inc dl
+        cmp al, 0
+        jnz ciclo
+       
+imprimir endm 
+
+
+ORG 100H 
+JMP INICIO 
+
+; Vectores de datos 
+
+MSG  DB  '----------------------------------------',0
+MSG2 DB '|                                      |',0
+;MSG3 DB '                    x                  ',0 
+MSG3 DB 'X', 0   
+
+
+
+INICIO: ;MOV CX, 23 ;El counter del LOOP va en INICIO, sino se hace infinito
+
+        MOV AH, 00H ; comando inicializacion de pantalla (de la INT 10H)
+        MOV AL, 00H ; comando que da el tamano de la pantalla (40X25) 25 alto
+        INT 10H ;ejecuta video
+        
+        IMPRIMIR MSG, 0, 0, 02FH
+        
+        
+MOV DI, 23
+MOV [2000H], 1        
+CICLO:
+        IMPRIMIR MSG2, [2000H], 0, 02FH
+        DEC DI
+        INC [2000H]
+        CMP DI, 0
+        JNE CICLO
+        JE CONTINUAR
+        
+        
+CONTINUAR:
+        
+       IMPRIMIR MSG, 24, 0, 02FH
+       
+       IMPRIMIR MSG3, 12, 20, 024H    
+RET
